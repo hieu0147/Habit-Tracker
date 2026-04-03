@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Shield, UserX, UserCheck, AlertTriangle, Users } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
+import { apiFetch, ApiError, type ApiUser } from '@/lib/api'
 import { AppHeader } from '@/components/app-header'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -31,19 +32,47 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 
 export default function AdminPage() {
   const router = useRouter()
-  const { user, users, updateUser, isLoading } = useAuth()
+  const { user, isLoading: authLoading } = useAuth()
   
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState<string | null>(null)
   const [actionType, setActionType] = useState<'block' | 'unblock'>('block')
   const [isUpdating, setIsUpdating] = useState(false)
+  const [isUsersLoading, setIsUsersLoading] = useState(false)
   const [error, setError] = useState('')
+  const [users, setUsers] = useState<ApiUser[]>([])
 
   useEffect(() => {
-    if (!isLoading && user && user.role !== 'admin') {
+    if (!authLoading && user && user.role !== 'admin') {
       router.push('/dashboard')
     }
-  }, [user, isLoading, router])
+  }, [user, authLoading, router])
+
+  useEffect(() => {
+    if (authLoading || !user || user.role !== 'admin') return
+
+    let cancelled = false
+    async function load() {
+      setIsUsersLoading(true)
+      setError('')
+      try {
+        const res = await apiFetch<{ users: ApiUser[] }>('/api/admin/users', {
+          auth: true,
+        })
+        if (!cancelled) setUsers(res.users)
+      } catch (e) {
+        if (cancelled) return
+        setError(e instanceof ApiError ? e.message : 'Không thể tải người dùng')
+      } finally {
+        if (!cancelled) setIsUsersLoading(false)
+      }
+    }
+
+    void load()
+    return () => {
+      cancelled = true
+    }
+  }, [authLoading, user])
 
   const getInitials = (name: string) => {
     return name
@@ -57,7 +86,7 @@ export default function AdminPage() {
   const handleActionClick = (userId: string, action: 'block' | 'unblock') => {
     // Prevent blocking self
     if (userId === user?.id) {
-      setError('You cannot block yourself')
+      setError('Bạn không thể chặn chính mình')
       return
     }
 
@@ -71,24 +100,35 @@ export default function AdminPage() {
     if (!selectedUser) return
 
     setIsUpdating(true)
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
-    updateUser(selectedUser, { 
-      status: actionType === 'block' ? 'blocked' : 'active' 
-    })
-    
-    setIsUpdating(false)
-    setConfirmDialogOpen(false)
-    setSelectedUser(null)
+    setError('')
+    try {
+      const nextStatus = actionType === 'block' ? 'blocked' : 'active'
+      await apiFetch(`/api/admin/users/${selectedUser}/status`, {
+        method: 'PUT',
+        auth: true,
+        body: JSON.stringify({ status: nextStatus }),
+      })
+
+      const res = await apiFetch<{ users: ApiUser[] }>('/api/admin/users', {
+        auth: true,
+      })
+      setUsers(res.users)
+
+      setConfirmDialogOpen(false)
+      setSelectedUser(null)
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : 'Không thể cập nhật người dùng')
+    } finally {
+      setIsUpdating(false)
+    }
   }
 
   const selectedUserData = selectedUser ? users.find(u => u.id === selectedUser) : null
 
-  if (isLoading) {
+  if (authLoading || isUsersLoading) {
     return (
       <>
-        <AppHeader title="Admin" description="User management" />
+        <AppHeader title="Admin" /> 
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
           <Card>
             <CardHeader>
@@ -118,19 +158,19 @@ export default function AdminPage() {
   if (!user || user.role !== 'admin') {
     return (
       <>
-        <AppHeader title="Access Denied" />
+        <AppHeader title="Truy cập bị từ chối" />
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
           <Card className="border-destructive/20">
             <CardContent className="flex flex-col items-center justify-center py-12 text-center">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 mb-4">
                 <Shield className="h-6 w-6 text-destructive" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Access Denied</h3>
+              <h3 className="text-lg font-semibold mb-2">Truy cập bị từ chối</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                You don&apos;t have permission to access this page.
+                Bạn không có quyền truy cập trang này.
               </p>
               <Button onClick={() => router.push('/dashboard')}>
-                Go to Dashboard
+                Đi đến Dashboard
               </Button>
             </CardContent>
           </Card>
@@ -144,7 +184,7 @@ export default function AdminPage() {
 
   return (
     <>
-      <AppHeader title="Admin" description="User management" />
+      <AppHeader title="Admin" />
       <main className="flex-1 overflow-y-auto p-4 lg:p-6">
         <div className="flex flex-col gap-6">
           {/* Stats */}
@@ -156,7 +196,7 @@ export default function AdminPage() {
                     <Users className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Total Users</p>
+                    <p className="text-sm text-muted-foreground">Tổng số Người dùng</p>
                     <p className="text-2xl font-bold">{users.length}</p>
                   </div>
                 </div>
@@ -170,7 +210,7 @@ export default function AdminPage() {
                     <UserCheck className="h-5 w-5 text-success" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Active Users</p>
+                    <p className="text-sm text-muted-foreground">Người dùng Hoạt động</p>
                     <p className="text-2xl font-bold">{activeUsers}</p>
                   </div>
                 </div>
@@ -184,7 +224,7 @@ export default function AdminPage() {
                     <UserX className="h-5 w-5 text-destructive" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Blocked Users</p>
+                    <p className="text-sm text-muted-foreground">Người dùng bị Chặn</p>
                     <p className="text-2xl font-bold">{blockedUsers}</p>
                   </div>
                 </div>
@@ -203,20 +243,17 @@ export default function AdminPage() {
           {/* Users Table */}
           <Card>
             <CardHeader>
-              <CardTitle>All Users</CardTitle>
-              <CardDescription>
-                Manage user accounts and permissions
-              </CardDescription>
+              <CardTitle>Tất cả Người dùng</CardTitle>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>User</TableHead>
+                    <TableHead>Người dùng</TableHead>
                     <TableHead>Email</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>Vai trò</TableHead>
+                    <TableHead>Trạng thái</TableHead>
+                    <TableHead className="text-right">Hành động</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -232,7 +269,7 @@ export default function AdminPage() {
                           <span className="font-medium">
                             {u.name}
                             {u.id === user.id && (
-                              <span className="text-muted-foreground ml-1">(You)</span>
+                              <span className="text-muted-foreground ml-1">(Bạn)</span>
                             )}
                           </span>
                         </div>
@@ -242,7 +279,7 @@ export default function AdminPage() {
                       </TableCell>
                       <TableCell>
                         <Badge variant={u.role === 'admin' ? 'default' : 'secondary'}>
-                          {u.role === 'admin' ? 'Admin' : 'User'}
+                          {u.role === 'admin' ? 'Admin' : 'Người dùng'}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -250,7 +287,7 @@ export default function AdminPage() {
                           variant={u.status === 'active' ? 'outline' : 'destructive'}
                           className={u.status === 'active' ? 'border-success/50 text-success' : ''}
                         >
-                          {u.status === 'active' ? 'Active' : 'Blocked'}
+                          {u.status === 'active' ? 'Hoạt động' : 'Bị chặn'}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
@@ -264,7 +301,7 @@ export default function AdminPage() {
                                 className="text-destructive hover:text-destructive hover:bg-destructive/10"
                               >
                                 <UserX className="h-4 w-4 mr-1" />
-                                Block
+                                Chặn
                               </Button>
                             ) : (
                               <Button
@@ -274,7 +311,7 @@ export default function AdminPage() {
                                 className="text-success hover:text-success hover:bg-success/10"
                               >
                                 <UserCheck className="h-4 w-4 mr-1" />
-                                Unblock
+                                Bỏ chặn
                               </Button>
                             )}
                           </>
@@ -294,12 +331,12 @@ export default function AdminPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {actionType === 'block' ? 'Block User' : 'Unblock User'}
+              {actionType === 'block' ? 'Chặn Người dùng' : 'Bỏ chặn Người dùng'}
             </DialogTitle>
             <DialogDescription>
               {actionType === 'block' 
-                ? `Are you sure you want to block ${selectedUserData?.name}? They will no longer be able to access their account.`
-                : `Are you sure you want to unblock ${selectedUserData?.name}? They will be able to access their account again.`
+                ? `Bạn có chắc chắn muốn chặn ${selectedUserData?.name}? Họ sẽ không thể truy cập tài khoản của mình nữa.`
+                : `Bạn có chắc chắn muốn bỏ chặn ${selectedUserData?.name}? Họ sẽ có thể truy cập tài khoản của mình lại.`
               }
             </DialogDescription>
           </DialogHeader>
@@ -309,7 +346,7 @@ export default function AdminPage() {
               onClick={() => setConfirmDialogOpen(false)}
               disabled={isUpdating}
             >
-              Cancel
+              Hủy
             </Button>
             <Button 
               variant={actionType === 'block' ? 'destructive' : 'default'}
@@ -318,8 +355,8 @@ export default function AdminPage() {
             >
               {isUpdating ? <Spinner className="mr-2 h-4 w-4" /> : null}
               {isUpdating 
-                ? (actionType === 'block' ? 'Blocking...' : 'Unblocking...')
-                : (actionType === 'block' ? 'Block User' : 'Unblock User')
+                ? (actionType === 'block' ? 'Đang chặn...' : 'Đang bỏ chặn...')
+                : (actionType === 'block' ? 'Chặn Người dùng' : 'Bỏ chặn Người dùng')
               }
             </Button>
           </DialogFooter>

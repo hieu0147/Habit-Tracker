@@ -10,8 +10,8 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'HabitFlow - Track Your Habits',
-  description: 'A modern habit tracking app to build better habits and achieve your goals',
+  title: 'Habit Tracker - Theo dõi Thói quen',
+  description: 'Ứng dụng theo dõi thói quen hiện đại để xây dựng thói quen tốt hơn và đạt được mục tiêu của bạn',
   generator: 'v0.app',
   icons: {
     icon: [

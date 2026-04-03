@@ -44,7 +44,7 @@ export default function DashboardPage() {
   if (isLoading) {
     return (
       <>
-        <AppHeader title="Dashboard" description="Overview of your habits" />
+        <AppHeader title="Dashboard" />
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
           <DashboardSkeleton />
         </main>
@@ -55,7 +55,7 @@ export default function DashboardPage() {
   if (error) {
     return (
       <>
-        <AppHeader title="Dashboard" description="Overview of your habits" />
+        <AppHeader title="Dashboard" />
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
           <ErrorState message={error} onRetry={reload} />
         </main>
@@ -65,7 +65,7 @@ export default function DashboardPage() {
 
   return (
     <>
-      <AppHeader title="Dashboard" description="Overview of your habits" />
+      <AppHeader title="Dashboard" />
       <main className="flex-1 overflow-y-auto p-4 lg:p-6">
         <div className="flex flex-col gap-6">
           {/* Stats Cards */}
@@ -73,14 +73,14 @@ export default function DashboardPage() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Total Habits
+                  Tổng số Thói quen
                 </CardTitle>
                 <ListTodo className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{activeHabits.length}</div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Active habits to track
+                  Thói quen đang hoạt động
                 </p>
               </CardContent>
             </Card>
@@ -88,7 +88,7 @@ export default function DashboardPage() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Completed Today
+                  Hoàn thành Hôm nay
                 </CardTitle>
                 <CheckCircle2 className="h-4 w-4 text-success" />
               </CardHeader>
@@ -98,8 +98,8 @@ export default function DashboardPage() {
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
                   {activeHabits.length > 0 
-                    ? `${Math.round((completedToday / activeHabits.length) * 100)}% completion rate`
-                    : 'No habits yet'
+                    ? `${Math.round((completedToday / activeHabits.length) * 100)}% tỷ lệ hoàn thành`
+                    : 'Chưa có thói quen'
                   }
                 </p>
               </CardContent>
@@ -108,14 +108,14 @@ export default function DashboardPage() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Best Streak
+                  Chuỗi Tốt nhất
                 </CardTitle>
                 <Flame className="h-4 w-4 text-orange-500" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{totalStreak}</div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {totalStreak === 1 ? 'day' : 'days'} in a row
+                  {totalStreak === 1 ? 'ngày' : 'ngày'} liên tiếp
                 </p>
               </CardContent>
             </Card>
@@ -125,9 +125,9 @@ export default function DashboardPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle>{"Today's Habits"}</CardTitle>
+                <CardTitle>{"Thói quen Hôm nay"}</CardTitle>
                 <CardDescription>
-                  {new Date().toLocaleDateString('en-US', { 
+                  {new Date().toLocaleDateString('vi-VN', { 
                     weekday: 'long', 
                     year: 'numeric', 
                     month: 'long', 
@@ -138,7 +138,7 @@ export default function DashboardPage() {
               <Button asChild size="sm">
                 <Link href="/habits/new">
                   <Plus className="h-4 w-4 mr-1" />
-                  Add Habit
+                  Thêm Thói quen
                 </Link>
               </Button>
             </CardHeader>
@@ -149,16 +149,13 @@ export default function DashboardPage() {
                     <EmptyMedia variant="icon">
                       <ListTodo className="h-6 w-6" />
                     </EmptyMedia>
-                    <EmptyTitle>No habits yet</EmptyTitle>
-                    <EmptyDescription>
-                      Start building better habits by creating your first one.
-                    </EmptyDescription>
+                    <EmptyTitle>Chưa có thói quen</EmptyTitle>
                   </EmptyHeader>
                   <EmptyContent>
                     <Button asChild>
                       <Link href="/habits/new">
                         <Plus className="h-4 w-4 mr-2" />
-                        Create Your First Habit
+                        Tạo Thói Quen Đầu Tiên
                       </Link>
                     </Button>
                   </EmptyContent>
@@ -179,7 +176,7 @@ export default function DashboardPage() {
                         <Switch
                           checked={completed}
                           onCheckedChange={() => toggleCheckIn(habit.id, today)}
-                          aria-label={`Mark ${habit.name} as ${completed ? 'incomplete' : 'complete'}`}
+                          aria-label={`Đánh dấu ${habit.name} là ${completed ? 'chưa hoàn thành' : 'đã hoàn thành'}`}
                         />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
@@ -202,7 +199,7 @@ export default function DashboardPage() {
                         <Button variant="ghost" size="icon" asChild className="shrink-0">
                           <Link href={`/habits/${habit.id}`}>
                             <ChevronRight className="h-4 w-4" />
-                            <span className="sr-only">View habit details</span>
+                            <span className="sr-only">Xem chi tiết thói quen</span>
                           </Link>
                         </Button>
                       </div>

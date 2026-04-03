@@ -38,13 +38,13 @@ export default function LoginPage() {
     const newErrors: FormErrors = {}
 
     if (!email.trim()) {
-      newErrors.email = 'Email is required'
+      newErrors.email = 'Email là bắt buộc'
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = 'Please enter a valid email address'
+      newErrors.email = 'Vui lòng nhập địa chỉ email hợp lệ'
     }
 
     if (!password) {
-      newErrors.password = 'Password is required'
+      newErrors.password = 'Mật khẩu là bắt buộc'
     }
 
     setErrors(newErrors)
@@ -64,7 +64,7 @@ export default function LoginPage() {
     if (result.success) {
       router.push('/dashboard')
     } else {
-      setServerError(result.error || 'Login failed')
+      setServerError(result.error || 'Đăng nhập thất bại')
     }
   }
 
@@ -88,14 +88,14 @@ export default function LoginPage() {
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary mb-4">
             <Flame className="h-7 w-7 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">HabitFlow</h1>
-          <p className="text-muted-foreground text-sm">Track your habits, achieve your goals</p>
+          <h1 className="text-2xl font-bold text-foreground">Habit Tracker</h1>
+          <p className="text-muted-foreground text-sm">Theo dõi thói quen, đạt được mục tiêu</p>
         </div>
 
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-xl">Welcome back</CardTitle>
-            <CardDescription>Sign in to your account to continue</CardDescription>
+            <CardTitle className="text-xl">Chào mừng trở lại</CardTitle>
+            <CardDescription>Đăng nhập vào tài khoản của bạn để tiếp tục</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit}>
@@ -112,7 +112,7 @@ export default function LoginPage() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="you@example.com"
+                    placeholder="email@example.com"
                     value={email}
                     onChange={(e) => {
                       setEmail(e.target.value)
@@ -125,12 +125,12 @@ export default function LoginPage() {
                 </Field>
 
                 <Field data-invalid={!!errors.password}>
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
+                  <FieldLabel htmlFor="password">Mật khẩu</FieldLabel>
                   <div className="relative">
                     <Input
                       id="password"
                       type={showPassword ? 'text' : 'password'}
-                      placeholder="Enter your password"
+                      placeholder="password"
                       value={password}
                       onChange={(e) => {
                         setPassword(e.target.value)
@@ -154,30 +154,20 @@ export default function LoginPage() {
 
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? <Spinner className="mr-2 h-4 w-4" /> : null}
-                  {isLoading ? 'Signing in...' : 'Sign in'}
+                  {isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
                 </Button>
               </FieldGroup>
             </form>
           </CardContent>
           <CardFooter className="flex justify-center">
             <p className="text-sm text-muted-foreground">
-              {"Don't have an account? "}
+              {"Bạn chưa có tài khoản? "}
               <Link href="/register" className="font-medium text-primary hover:underline">
-                Sign up
+                Đăng ký
               </Link>
             </p>
           </CardFooter>
         </Card>
-
-        {/* Demo credentials hint */}
-        <div className="mt-6 rounded-lg border bg-muted/50 p-4">
-          <p className="text-sm font-medium text-foreground mb-2">Demo Credentials</p>
-          <div className="text-xs text-muted-foreground space-y-1">
-            <p>Admin: john@example.com</p>
-            <p>User: jane@example.com</p>
-            <p className="italic">Any password works for demo</p>
-          </div>
-        </div>
       </div>
     </div>
   )

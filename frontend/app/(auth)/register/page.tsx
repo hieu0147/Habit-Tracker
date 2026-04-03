@@ -43,27 +43,27 @@ export default function RegisterPage() {
     const newErrors: FormErrors = {}
 
     if (!name.trim()) {
-      newErrors.name = 'Name is required'
+      newErrors.name = 'Họ tên là bắt buộc'
     } else if (name.trim().length < 2) {
-      newErrors.name = 'Name must be at least 2 characters'
+      newErrors.name = 'Họ tên phải có ít nhất 2 ký tự'
     }
 
     if (!email.trim()) {
-      newErrors.email = 'Email is required'
+      newErrors.email = 'Email là bắt buộc'
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = 'Please enter a valid email address'
+      newErrors.email = 'Vui lòng nhập địa chỉ email hợp lệ'
     }
 
     if (!password) {
-      newErrors.password = 'Password is required'
+      newErrors.password = 'Mật khẩu là bắt buộc'
     } else if (password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters'
+      newErrors.password = 'Mật khẩu phải có ít nhất 8 ký tự'
     }
 
     if (!confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password'
+      newErrors.confirmPassword = 'Vui lòng xác nhận mật khẩu của bạn'
     } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match'
+      newErrors.confirmPassword = 'Mật khẩu không khớp'
     }
 
     setErrors(newErrors)
@@ -83,7 +83,7 @@ export default function RegisterPage() {
     if (result.success) {
       router.push('/dashboard')
     } else {
-      setServerError(result.error || 'Registration failed')
+      setServerError(result.error || 'Đăng ký thất bại')
     }
   }
 
@@ -107,14 +107,14 @@ export default function RegisterPage() {
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary mb-4">
             <Flame className="h-7 w-7 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">HabitFlow</h1>
-          <p className="text-muted-foreground text-sm">Start building better habits today</p>
+          <h1 className="text-2xl font-bold text-foreground">Habit Tracker</h1>
+          <p className="text-muted-foreground text-sm">Bắt đầu xây dựng thói quen tốt hơn ngay hôm nay</p>
         </div>
 
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-xl">Create an account</CardTitle>
-            <CardDescription>Enter your details to get started</CardDescription>
+            <CardTitle className="text-xl">Tạo tài khoản</CardTitle>
+            <CardDescription>Nhập thông tin chi tiết của bạn để bắt đầu</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit}>
@@ -127,11 +127,11 @@ export default function RegisterPage() {
                 )}
 
                 <Field data-invalid={!!errors.name}>
-                  <FieldLabel htmlFor="name">Full Name</FieldLabel>
+                  <FieldLabel htmlFor="name">Họ và Tên</FieldLabel>
                   <Input
                     id="name"
                     type="text"
-                    placeholder="John Doe"
+                    placeholder="Nguyễn Văn A"
                     value={name}
                     onChange={(e) => {
                       setName(e.target.value)
@@ -148,7 +148,7 @@ export default function RegisterPage() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="you@example.com"
+                    placeholder="email@example.com"
                     value={email}
                     onChange={(e) => {
                       setEmail(e.target.value)
@@ -161,12 +161,12 @@ export default function RegisterPage() {
                 </Field>
 
                 <Field data-invalid={!!errors.password}>
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
+                  <FieldLabel htmlFor="password">Mật khẩu</FieldLabel>
                   <div className="relative">
                     <Input
                       id="password"
                       type={showPassword ? 'text' : 'password'}
-                      placeholder="At least 8 characters"
+                      placeholder="Ít nhất 8 ký tự"
                       value={password}
                       onChange={(e) => {
                         setPassword(e.target.value)
@@ -189,12 +189,12 @@ export default function RegisterPage() {
                 </Field>
 
                 <Field data-invalid={!!errors.confirmPassword}>
-                  <FieldLabel htmlFor="confirmPassword">Confirm Password</FieldLabel>
+                  <FieldLabel htmlFor="confirmPassword">Xác nhận Mật khẩu</FieldLabel>
                   <div className="relative">
                     <Input
                       id="confirmPassword"
                       type={showConfirmPassword ? 'text' : 'password'}
-                      placeholder="Confirm your password"
+                      placeholder="Xác nhận mật khẩu của bạn"
                       value={confirmPassword}
                       onChange={(e) => {
                         setConfirmPassword(e.target.value)
@@ -218,16 +218,16 @@ export default function RegisterPage() {
 
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? <Spinner className="mr-2 h-4 w-4" /> : null}
-                  {isLoading ? 'Creating account...' : 'Create account'}
+                  {isLoading ? 'Đang tạo tài khoản...' : 'Tạo tài khoản'}
                 </Button>
               </FieldGroup>
             </form>
           </CardContent>
           <CardFooter className="flex justify-center">
             <p className="text-sm text-muted-foreground">
-              Already have an account?{' '}
+              Bạn đã có tài khoản?{' '}
               <Link href="/login" className="font-medium text-primary hover:underline">
-                Sign in
+                Đăng nhập
               </Link>
             </p>
           </CardFooter>
