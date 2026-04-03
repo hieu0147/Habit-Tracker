@@ -7,6 +7,7 @@ import { env } from "./lib/env";
 import { notFoundHandler, errorHandler } from "./middleware/errors";
 import { authRouter } from "./routes/auth";
 import { habitsRouter } from "./routes/habits";
+import { dashboardRouter } from "./routes/dashboard";
 
 export function createApp() {
   const app = express();
@@ -27,6 +28,7 @@ export function createApp() {
 
   app.use("/api/auth", authRouter);
   app.use("/api/habits", habitsRouter);
+  app.use("/api/dashboard", dashboardRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
