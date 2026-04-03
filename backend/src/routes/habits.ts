@@ -7,6 +7,7 @@ import { HttpError } from "../lib/httpError";
 import { HabitModel } from "../models/Habit";
 import { HabitLogModel } from "../models/HabitLog";
 import { isValidDateKey, utcDateKey } from "../lib/dateKey";
+import { streakStatsForHabit } from "../lib/streak";
 
 const objectIdSchema = z
   .string()
@@ -42,7 +43,7 @@ const logsQuerySchema = z.object({
   to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 });
 
-function toPublicHabit(doc: {
+export function toPublicHabit(doc: {
   _id: unknown;
   userId: unknown;
   title: string;
@@ -235,6 +236,35 @@ habitsRouter.delete("/:id/check-in", async (req, res, next) => {
     }
 
     res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/habits/:id/streak
+habitsRouter.get("/:id/streak", async (req, res, next) => {
+  try {
+    const userId = req.userId!;
+    const habitId = objectIdSchema.parse(req.params.id);
+
+    const habit = await findOwnedHabit(userId, habitId);
+    if (!habit) {
+      next(new HttpError(404, "Habit not found"));
+      return;
+    }
+
+    const dates = await HabitLogModel.distinct("date", {
+      habitId,
+      userId,
+    });
+    const today = utcDateKey();
+    const stats = streakStatsForHabit(dates as string[], today);
+
+    res.json({
+      habitId: String(habit._id),
+      today,
+      ...stats,
+    });
   } catch (err) {
     next(err);
   }
