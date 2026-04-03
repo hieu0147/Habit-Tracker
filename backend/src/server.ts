@@ -6,6 +6,7 @@ import morgan from "morgan";
 import { env } from "./lib/env";
 import { notFoundHandler, errorHandler } from "./middleware/errors";
 import { authRouter } from "./routes/auth";
+import { habitsRouter } from "./routes/habits";
 
 export function createApp() {
   const app = express();
@@ -25,6 +26,7 @@ export function createApp() {
   });
 
   app.use("/api/auth", authRouter);
+  app.use("/api/habits", habitsRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
