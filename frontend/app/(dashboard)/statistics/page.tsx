@@ -56,7 +56,7 @@ export default function StatisticsPage() {
   if (isLoading) {
     return (
       <>
-        <AppHeader title="Statistics" description="Track your progress" />
+        <AppHeader title="Thống kê"/>
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
           <StatisticsSkeleton />
         </main>
@@ -67,7 +67,7 @@ export default function StatisticsPage() {
   if (error) {
     return (
       <>
-        <AppHeader title="Statistics" description="Track your progress" />
+        <AppHeader title="Thống kê" />
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
           <ErrorState message={error} onRetry={reload} />
         </main>
@@ -78,23 +78,23 @@ export default function StatisticsPage() {
   if (!stats || habits.length === 0) {
     return (
       <>
-        <AppHeader title="Statistics" description="Track your progress" />
+        <AppHeader title="Thống kê" />    
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
           <Empty className="border min-h-[400px]">
             <EmptyHeader>
               <EmptyMedia variant="icon">
                 <BarChart3 className="h-6 w-6" />
               </EmptyMedia>
-              <EmptyTitle>No statistics yet</EmptyTitle>
+              <EmptyTitle>Chưa có thống kê</EmptyTitle>
               <EmptyDescription>
-                Start tracking habits to see your statistics and progress over time.
+                Bắt đầu theo dõi thói quen để xem thống kê và tiến trình theo thời gian.
               </EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
               <Button asChild>
                 <Link href="/habits/new">
                   <Plus className="h-4 w-4 mr-2" />
-                  Create Your First Habit
+                  Tạo Thói Quen Đầu Tiên
                 </Link>
               </Button>
             </EmptyContent>
@@ -106,7 +106,7 @@ export default function StatisticsPage() {
 
   return (
     <>
-      <AppHeader title="Statistics" description="Track your progress" />
+      <AppHeader title="Thống kê" />
       <main className="flex-1 overflow-y-auto p-4 lg:p-6">
         <div className="flex flex-col gap-6">
           {/* Overview Cards */}
@@ -118,7 +118,7 @@ export default function StatisticsPage() {
                     <Target className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Total Habits</p>
+                    <p className="text-sm text-muted-foreground">Tổng số Thói quen</p>
                     <p className="text-2xl font-bold">{stats.totalHabits}</p>
                   </div>
                 </div>
@@ -132,7 +132,7 @@ export default function StatisticsPage() {
                     <Calendar className="h-5 w-5 text-success" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Total Check-ins</p>
+                    <p className="text-sm text-muted-foreground">Tổng số Check-in</p>
                     <p className="text-2xl font-bold">{stats.totalCheckIns}</p>
                   </div>
                 </div>
@@ -146,8 +146,8 @@ export default function StatisticsPage() {
                     <Flame className="h-5 w-5 text-orange-500" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Current Best Streak</p>
-                    <p className="text-2xl font-bold">{stats.currentBestStreak} days</p>
+                    <p className="text-sm text-muted-foreground">Chuỗi Tốt nhất Hiện tại</p>
+                    <p className="text-2xl font-bold">{stats.currentBestStreak} ngày</p>
                   </div>
                 </div>
               </CardContent>
@@ -160,7 +160,7 @@ export default function StatisticsPage() {
                     <TrendingUp className="h-5 w-5 text-chart-4" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Avg Completion Rate</p>
+                    <p className="text-sm text-muted-foreground">Tỷ lệ Hoàn thành Average</p>
                     <p className="text-2xl font-bold">{stats.avgCompletionRate}%</p>
                   </div>
                 </div>
@@ -171,9 +171,9 @@ export default function StatisticsPage() {
           {/* Habit Performance */}
           <Card>
             <CardHeader>
-              <CardTitle>Habit Performance</CardTitle>
+              <CardTitle>Hiệu suất Thói quen</CardTitle>
               <CardDescription>
-                See how each habit is performing over time
+                Xem hiệu suất của từng thói quen theo thời gian
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -201,9 +201,9 @@ export default function StatisticsPage() {
                     </div>
                     <Progress value={habitStats.completionRate} className="h-2" />
                     <div className="flex gap-6 text-xs text-muted-foreground">
-                      <span>{habitStats.totalCheckIns} check-ins</span>
-                      <span>Best streak: {habitStats.longestStreak} days</span>
-                      <span>Tracking for {habitStats.totalDays} days</span>
+                      <span>{habitStats.totalCheckIns} lần check-in</span>
+                      <span>Chuỗi tốt nhất: {habitStats.longestStreak} ngày</span>
+                      <span>Đang theo dõi {habitStats.totalDays} ngày</span>
                     </div>
                   </div>
                 ))}
@@ -220,15 +220,15 @@ export default function StatisticsPage() {
                     <TrendingUp className="h-6 w-6 text-success" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-success">Best Performing Habit</p>
+                    <p className="text-sm font-medium text-success">Thói quen Hiệu suất Cao nhất</p>
                     <p className="text-lg font-semibold">{stats.bestHabit.habit.name}</p>
                     <p className="text-sm text-muted-foreground">
-                      {stats.bestHabit.stats.completionRate}% completion rate with {stats.bestHabit.stats.totalCheckIns} total check-ins
+                      Tỷ lệ hoàn thành {stats.bestHabit.stats.completionRate}% với {stats.bestHabit.stats.totalCheckIns} lần check-in tổng cộng
                     </p>
                   </div>
                   <Button variant="outline" size="sm" asChild>
                     <Link href={`/habits/${stats.bestHabit.habit.id}`}>
-                      View Details
+                      Xem Chi tiết
                     </Link>
                   </Button>
                 </div>

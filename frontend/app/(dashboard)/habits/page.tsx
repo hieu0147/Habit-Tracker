@@ -59,7 +59,7 @@ export default function HabitsPage() {
   if (isLoading) {
     return (
       <>
-        <AppHeader title="Habits" description="Manage your habits" />
+        <AppHeader title="Thói quen" />
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
           <HabitListSkeleton />
         </main>
@@ -70,7 +70,7 @@ export default function HabitsPage() {
   if (error) {
     return (
       <>
-        <AppHeader title="Habits" description="Manage your habits" />
+        <AppHeader title="Thói quen" />
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
           <ErrorState message={error} onRetry={reload} />
         </main>
@@ -80,7 +80,7 @@ export default function HabitsPage() {
 
   return (
     <>
-      <AppHeader title="Habits" description="Manage your habits" />
+      <AppHeader title="Thói quen" />
       <main className="flex-1 overflow-y-auto p-4 lg:p-6">
         <div className="flex flex-col gap-6">
           {/* Header Actions */}
@@ -88,28 +88,28 @@ export default function HabitsPage() {
             <Button asChild>
               <Link href="/habits/new">
                 <Plus className="h-4 w-4 mr-2" />
-                Add Habit
+                Thêm Thói quen
               </Link>
             </Button>
           </div>
 
           {/* Habits List */}
           {habits.length === 0 ? (
-            <Empty className="border min-h-[400px]">
+            <Empty className="border min-h-100">
               <EmptyHeader>
                 <EmptyMedia variant="icon">
                   <ListTodo className="h-6 w-6" />
                 </EmptyMedia>
-                <EmptyTitle>No habits yet</EmptyTitle>
+                <EmptyTitle>Chưa có thói quen nào</EmptyTitle>
                 <EmptyDescription>
-                  Create your first habit to start building better routines and tracking your progress.
+                  Tạo thói quen đầu tiên của bạn để bắt đầu xây dựng thói quen tốt hơn và theo dõi tiến trình.
                 </EmptyDescription>
               </EmptyHeader>
               <EmptyContent>
                 <Button asChild>
                   <Link href="/habits/new">
                     <Plus className="h-4 w-4 mr-2" />
-                    Create Your First Habit
+                    Tạo Thói quen Đầu tiên
                   </Link>
                 </Button>
               </EmptyContent>
@@ -139,12 +139,12 @@ export default function HabitsPage() {
                             {streak > 0 && (
                               <Badge variant="secondary" className="gap-1">
                                 <Flame className="h-3 w-3 text-orange-500" />
-                                {streak} day streak
+                                {streak} ngày liên tiếp
                               </Badge>
                             )}
                             {!habit.isActive && (
                               <Badge variant="outline" className="text-muted-foreground">
-                                Inactive
+                                Không hoạt động
                               </Badge>
                             )}
                           </div>
@@ -156,7 +156,7 @@ export default function HabitsPage() {
                           <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
                             <span className="flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
-                              Started {new Date(habit.startDate).toLocaleDateString()}
+                              Bắt đầu {new Date(habit.startDate).toLocaleDateString()}
                             </span>
                           </div>
                         </div>
@@ -164,7 +164,7 @@ export default function HabitsPage() {
                           <Button variant="ghost" size="icon" asChild>
                             <Link href={`/habits/${habit.id}`}>
                               <Pencil className="h-4 w-4" />
-                              <span className="sr-only">Edit {habit.name}</span>
+                              <span className="sr-only">Chỉnh sửa {habit.name}</span>
                             </Link>
                           </Button>
                           <Button 
@@ -174,7 +174,7 @@ export default function HabitsPage() {
                             className="text-destructive hover:text-destructive hover:bg-destructive/10"
                           >
                             <Trash2 className="h-4 w-4" />
-                            <span className="sr-only">Delete {habit.name}</span>
+                            <span className="sr-only">Xóa {habit.name}</span>
                           </Button>
                         </div>
                       </div>
@@ -191,9 +191,9 @@ export default function HabitsPage() {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Habit</DialogTitle>
+            <DialogTitle>Xóa Thói quen</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete &quot;{habitToDeleteName}&quot;? This action cannot be undone and all tracking data will be lost.
+              Bạn có chắc chắn muốn xóa &quot;{habitToDeleteName}&quot;? Hành động này không thể hoàn tác và tất cả dữ liệu theo dõi sẽ bị mất.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -202,7 +202,7 @@ export default function HabitsPage() {
               onClick={() => setDeleteDialogOpen(false)}
               disabled={isDeleting}
             >
-              Cancel
+              Hủy
             </Button>
             <Button 
               variant="destructive" 
@@ -210,7 +210,7 @@ export default function HabitsPage() {
               disabled={isDeleting}
             >
               {isDeleting ? <Spinner className="mr-2 h-4 w-4" /> : null}
-              {isDeleting ? 'Deleting...' : 'Delete'}
+              {isDeleting ? 'Đang xóa...' : 'Xóa'}
             </Button>
           </DialogFooter>
         </DialogContent>

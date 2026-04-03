@@ -6,7 +6,6 @@ import Link from 'next/link'
 import { ArrowLeft, AlertCircle, Trash2, Flame, Calendar, CheckCircle } from 'lucide-react'
 import { useHabits } from '@/contexts/habits-context'
 import { AppHeader } from '@/components/app-header'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -62,20 +61,20 @@ export default function EditHabitPage({ params }: { params: Promise<{ id: string
     const newErrors: FormErrors = {}
 
     if (!name.trim()) {
-      newErrors.name = 'Habit name is required'
+      newErrors.name = 'Tên thói quen là bắt buộc'
     } else if (name.trim().length < 2) {
-      newErrors.name = 'Habit name must be at least 2 characters'
+      newErrors.name = 'Tên thói quen phải có ít nhất 2 ký tự'
     }
 
     if (!startDate) {
-      newErrors.startDate = 'Start date is required'
+      newErrors.startDate = 'Ngày bắt đầu là bắt buộc'
     } else {
-      const selectedDate = new Date(startDate)
+      const selectedDate = new Date(startDate + 'T00:00:00')
       const today = new Date()
       today.setHours(0, 0, 0, 0)
       
       if (selectedDate > today) {
-        newErrors.startDate = 'Start date cannot be in the future'
+        newErrors.startDate = 'Ngày bắt đầu không thể là trong tương lai'
       }
     }
 
@@ -99,7 +98,7 @@ export default function EditHabitPage({ params }: { params: Promise<{ id: string
       })
       router.push('/habits')
     } catch {
-      setServerError('Failed to update habit. Please try again.')
+      setServerError('Cập nhật thói quen thất bại. Vui lòng thử lại.')
     } finally {
       setIsLoading(false)
     }
@@ -113,7 +112,7 @@ export default function EditHabitPage({ params }: { params: Promise<{ id: string
     if (result.success) {
       router.push('/habits')
     } else {
-      setServerError(result.error || 'Failed to delete habit')
+      setServerError(result.error || 'Xóa thói quen thất bại')
       setDeleteDialogOpen(false)
     }
   }
@@ -121,24 +120,22 @@ export default function EditHabitPage({ params }: { params: Promise<{ id: string
   if (habitsLoading) {
     return (
       <>
-        <AppHeader title="Edit Habit" />
+        <AppHeader title="Chỉnh sửa Thói quen" />
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
           <div className="max-w-2xl mx-auto">
             <Skeleton className="h-8 w-32 mb-4" />
-            <Card>
-              <CardHeader>
+            <div className="bg-card border rounded-lg">
+              <div className="p-6 space-y-4">
                 <Skeleton className="h-6 w-48" />
                 <Skeleton className="h-4 w-64" />
-              </CardHeader>
-              <CardContent className="flex flex-col gap-6">
                 {[1, 2, 3].map(i => (
                   <div key={i} className="flex flex-col gap-2">
                     <Skeleton className="h-4 w-24" />
                     <Skeleton className="h-10 w-full" />
                   </div>
                 ))}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </main>
       </>
@@ -148,17 +145,17 @@ export default function EditHabitPage({ params }: { params: Promise<{ id: string
   if (!habit) {
     return (
       <>
-        <AppHeader title="Habit Not Found" />
+        <AppHeader title="Không tìm thấy Thói quen" />
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
           <div className="max-w-2xl mx-auto text-center py-12">
-            <h2 className="text-xl font-semibold mb-2">Habit Not Found</h2>
+            <h2 className="text-xl font-semibold mb-2">Không tìm thấy Thói quen</h2>
             <p className="text-muted-foreground mb-4">
-              The habit you&apos;re looking for doesn&apos;t exist or has been deleted.
+              Thói quen bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.
             </p>
             <Button asChild>
               <Link href="/habits">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Habits
+                Quay lại Thói quen
               </Link>
             </Button>
           </div>
@@ -169,70 +166,27 @@ export default function EditHabitPage({ params }: { params: Promise<{ id: string
 
   return (
     <>
-      <AppHeader title="Edit Habit" description={habit.name} />
+      <AppHeader title="Chỉnh sửa Thói quen"/>
       <main className="flex-1 overflow-y-auto p-4 lg:p-6">
         <div className="max-w-2xl mx-auto">
-          <Button variant="ghost" asChild className="mb-4">
-            <Link href="/habits">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Habits
-            </Link>
-          </Button>
+        
 
-          {/* Stats Card */}
-          {stats && (
-            <Card className="mb-6">
-              <CardContent className="p-6">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center">
-                    <div className="flex items-center justify-center gap-1 mb-1">
-                      <Flame className="h-4 w-4 text-orange-500" />
-                      <span className="text-2xl font-bold">{currentStreak}</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">Current Streak</p>
+          <Dialog open={true} onOpenChange={(open) => !open && router.push('/habits')}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <DialogTitle>Chỉnh sửa Thói quen</DialogTitle>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold mb-1">{stats.longestStreak}</div>
-                    <p className="text-xs text-muted-foreground">Longest Streak</p>
-                  </div>
-                  <div className="text-center">
-                    <div className="flex items-center justify-center gap-1 mb-1">
-                      <CheckCircle className="h-4 w-4 text-success" />
-                      <span className="text-2xl font-bold">{stats.completionRate}%</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">Completion Rate</p>
-                  </div>
-                  <div className="text-center">
-                    <div className="flex items-center justify-center gap-1 mb-1">
-                      <Calendar className="h-4 w-4 text-primary" />
-                      <span className="text-2xl font-bold">{stats.totalCheckIns}</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">Total Check-ins</p>
-                  </div>
+                  {!isActive && (
+                    <Badge variant="outline" className="text-muted-foreground">
+                      Không hoạt động
+                    </Badge>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
-          )}
-
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Edit Habit</CardTitle>
-                  <CardDescription>
-                    Update your habit details
-                  </CardDescription>
-                </div>
-                {!isActive && (
-                  <Badge variant="outline" className="text-muted-foreground">
-                    Inactive
-                  </Badge>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent>
+              </DialogHeader>
               <form onSubmit={handleSubmit}>
-                <FieldGroup>
+                <div className="grid gap-4 py-4">
                   {serverError && (
                     <Alert variant="destructive">
                       <AlertCircle className="h-4 w-4" />
@@ -240,12 +194,12 @@ export default function EditHabitPage({ params }: { params: Promise<{ id: string
                     </Alert>
                   )}
 
-                  <Field data-invalid={!!errors.name}>
-                    <FieldLabel htmlFor="name">Habit Name *</FieldLabel>
+                  <div className="grid gap-2">
+                    <FieldLabel htmlFor="name">Tên Thói quen *</FieldLabel>
                     <Input
                       id="name"
                       type="text"
-                      placeholder="e.g., Morning Exercise"
+                      placeholder="ví dụ: Tập thể dục buổi sáng"
                       value={name}
                       onChange={(e) => {
                         setName(e.target.value)
@@ -254,25 +208,22 @@ export default function EditHabitPage({ params }: { params: Promise<{ id: string
                       disabled={isLoading}
                     />
                     {errors.name && <FieldError>{errors.name}</FieldError>}
-                  </Field>
+                  </div>
 
-                  <Field>
-                    <FieldLabel htmlFor="description">Description</FieldLabel>
+                  <div className="grid gap-2">
+                    <FieldLabel htmlFor="description">Mô tả</FieldLabel>
                     <Textarea
                       id="description"
-                      placeholder="Describe your habit in detail..."
+                      placeholder="Mô tả chi tiết thói quen của bạn..."
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       disabled={isLoading}
                       rows={3}
                     />
-                    <FieldDescription>
-                      Optional. Add details to help you stay focused.
-                    </FieldDescription>
-                  </Field>
+                  </div>
 
-                  <Field data-invalid={!!errors.startDate}>
-                    <FieldLabel htmlFor="startDate">Start Date *</FieldLabel>
+                  <div className="grid gap-2">
+                    <FieldLabel htmlFor="startDate">Ngày Bắt đầu *</FieldLabel>
                     <Input
                       id="startDate"
                       type="date"
@@ -282,12 +233,12 @@ export default function EditHabitPage({ params }: { params: Promise<{ id: string
                         if (errors.startDate) setErrors({ ...errors, startDate: undefined })
                       }}
                       disabled={isLoading}
-                      max={new Date().toISOString().split('T')[0]}
+                      max={new Date().toLocaleDateString('en-CA')}
                     />
                     {errors.startDate && <FieldError>{errors.startDate}</FieldError>}
-                  </Field>
+                  </div>
 
-                  <Field orientation="horizontal">
+                  <div className="flex items-center gap-3">
                     <Switch
                       id="isActive"
                       checked={isActive}
@@ -295,36 +246,32 @@ export default function EditHabitPage({ params }: { params: Promise<{ id: string
                       disabled={isLoading}
                     />
                     <div className="flex flex-col">
-                      <FieldLabel htmlFor="isActive" className="cursor-pointer">Active</FieldLabel>
-                      <FieldDescription>
-                        Inactive habits won&apos;t appear in daily check-ins
-                      </FieldDescription>
+                      <FieldLabel htmlFor="isActive" className="cursor-pointer">Hoạt động</FieldLabel>
                     </div>
-                  </Field>
-
-                  <div className="flex gap-3 pt-4">
-                    <Button type="submit" disabled={isLoading}>
-                      {isLoading ? <Spinner className="mr-2 h-4 w-4" /> : null}
-                      {isLoading ? 'Saving...' : 'Save Changes'}
-                    </Button>
-                    <Button type="button" variant="outline" asChild disabled={isLoading}>
-                      <Link href="/habits">Cancel</Link>
-                    </Button>
-                    <div className="flex-1" />
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      onClick={() => setDeleteDialogOpen(true)}
-                      disabled={isLoading}
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete
-                    </Button>
                   </div>
-                </FieldGroup>
+                </div>
+                <DialogFooter>
+                  <Button type="submit" disabled={isLoading}>
+                    {isLoading ? <Spinner className="mr-2 h-4 w-4" /> : null}
+                    {isLoading ? 'Đang lưu...' : 'Lưu thay đổi'}
+                  </Button>
+                  <Button type="button" variant="outline" onClick={() => router.push('/habits')} disabled={isLoading}>
+                    Hủy
+                  </Button>
+                  <div className="flex-1" />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={() => setDeleteDialogOpen(true)}
+                    disabled={isLoading}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Xóa
+                  </Button>
+                </DialogFooter>
               </form>
-            </CardContent>
-          </Card>
+            </DialogContent>
+          </Dialog>
         </div>
       </main>
 
@@ -332,9 +279,9 @@ export default function EditHabitPage({ params }: { params: Promise<{ id: string
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Habit</DialogTitle>
+            <DialogTitle>Xóa Thói quen</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete &quot;{habit.name}&quot;? This action cannot be undone and all tracking data will be lost.
+              Bạn có chắc chắn muốn xóa &quot;{habit.name}&quot;? Hành động này không thể hoàn tác và tất cả dữ liệu theo dõi sẽ bị mất.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -343,7 +290,7 @@ export default function EditHabitPage({ params }: { params: Promise<{ id: string
               onClick={() => setDeleteDialogOpen(false)}
               disabled={isDeleting}
             >
-              Cancel
+              Hủy
             </Button>
             <Button 
               variant="destructive" 
@@ -351,7 +298,7 @@ export default function EditHabitPage({ params }: { params: Promise<{ id: string
               disabled={isDeleting}
             >
               {isDeleting ? <Spinner className="mr-2 h-4 w-4" /> : null}
-              {isDeleting ? 'Deleting...' : 'Delete'}
+              {isDeleting ? 'Đang xóa...' : 'Xóa'}
             </Button>
           </DialogFooter>
         </DialogContent>

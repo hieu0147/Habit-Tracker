@@ -32,17 +32,17 @@ const mainNavItems = [
     icon: LayoutDashboard,
   },
   {
-    title: 'Habits',
+    title: 'Thói quen',
     href: '/habits',
     icon: ListTodo,
   },
   {
-    title: 'Statistics',
+    title: 'Thống kê',
     href: '/statistics',
     icon: BarChart3,
   },
   {
-    title: 'Profile',
+    title: 'Hồ sơ',
     href: '/profile',
     icon: User,
   },
@@ -78,10 +78,10 @@ export function AppSidebar() {
           </div>
           <div className="flex flex-col">
             <span className="text-base font-semibold text-sidebar-foreground">
-              HabitFlow
+              Habit Tracker
             </span>
             <span className="text-xs text-sidebar-foreground/60">
-              Track your habits
+              Theo dõi thói quen
             </span>
           </div>
         </Link>
@@ -89,7 +89,7 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>Điều hướng</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {mainNavItems.map((item) => (
@@ -112,7 +112,7 @@ export function AppSidebar() {
 
         {user?.role === 'admin' && (
           <SidebarGroup>
-            <SidebarGroupLabel>Administration</SidebarGroupLabel>
+            <SidebarGroupLabel>Quản trị</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {adminNavItems.map((item) => (
