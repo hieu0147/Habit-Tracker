@@ -222,28 +222,13 @@ habit-tracker/
 - **Export/Import** - Data portability
 - **Offline Support** - PWA capabilities
 
-## 🤝 Đóng góp
-
-Chúng tôi rất mong nhận được đóng góp từ cộng đồng!
-
-### 🐛 Báo cáo Issues
-Vui lòng report bugs tại [GitHub Issues](https://github.com/your-username/habit-tracker/issues)
-
-### 💡 Đề xuất Features
-Gửi đề xuất tính năng mới tại [GitHub Discussions](https://github.com/your-username/habit-tracker/discussions)
-
-### 📧 Hướng dẫn phát triển
-Xem [CONTRIBUTING.md](CONTRIBUTING.md) để biết thêm chi tiết về cách đóng góp code.
-
 ## 📄 Giấy phép
 
 Dự án này được cấp phép dưới [MIT License](LICENSE) - bạn có thể tự do sử dụng, sửa đổi, và phân phối.
 
 ## 👥 Team
 
-- **Developer**: [Your Name]
-- **Design**: [Your Name]
-- **Testing**: [Your Name]
+- Lê Khả Hiếu
 
 ---
 
