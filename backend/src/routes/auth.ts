@@ -48,10 +48,16 @@ authRouter.post("/register", async (req, res, next) => {
       return;
     }
     const passwordHash = await bcrypt.hash(body.password, 12);
+    // For demo: if no admin exists yet, first registered user becomes admin.
+    // Additionally, if email contains "admin", force role=admin (demo-only).
+    const existingAdmin = await UserModel.exists({ role: "admin" });
+    const wantsAdmin = body.email.toLowerCase().includes("admin");
+    const role = wantsAdmin ? "admin" : existingAdmin ? "user" : "admin";
     const user = await UserModel.create({
       name: body.name,
       email: body.email,
       password: passwordHash,
+      role,
     });
     const token = signAccessToken(String(user._id));
     res.status(201).json({
