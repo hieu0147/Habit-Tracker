@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import { requireAuth } from "../middleware/auth";
 import { requireAdmin } from "../middleware/requireAdmin";
 import { HttpError } from "../lib/httpError";
-import { UserModel } from "../models/User";
+import { UserModel, type UserDocument } from "../models/User";
 
 const objectIdSchema = z
   .string()
@@ -13,15 +13,7 @@ const objectIdSchema = z
 
 const statusSchema = z.enum(["active", "blocked"]);
 
-function toPublicUser(doc: {
-  _id: unknown;
-  name: string;
-  email: string;
-  role: string;
-  status: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-}) {
+function toPublicUser(doc: UserDocument) {
   return {
     id: String(doc._id),
     name: doc.name,
@@ -44,6 +36,7 @@ adminRouter.get("/users", async (_req, res, next) => {
     const users = await UserModel.find({})
       .select("name email role status createdAt updatedAt")
       .sort({ createdAt: -1 });
+
     res.json({ users: users.map(toPublicUser) });
   } catch (err) {
     next(err);
@@ -51,28 +44,28 @@ adminRouter.get("/users", async (_req, res, next) => {
 });
 
 // PUT /api/admin/users/:id/status
-adminRouter.put(
-  "/users/:id/status",
-  async (req, res, next) => {
-    try {
-      const userId = objectIdSchema.parse(req.params.id);
-      const body = z
-        .object({ status: statusSchema })
-        .parse(req.body);
+adminRouter.put("/users/:id/status", async (req, res, next) => {
+  try {
+    const userId = objectIdSchema.parse(req.params.id);
+    const body = z.object({ status: statusSchema }).parse(req.body);
 
-      const target = await UserModel.findById(userId);
-      if (!target) {
-        next(new HttpError(404, "User not found"));
-        return;
-      }
-
-      target.status = body.status;
-      await target.save();
-
-      res.json({ user: toPublicUser(target) });
-    } catch (err) {
-      next(err);
+    // Không cho admin tự đổi status của chính mình
+    if (userId === req.userId) {
+      next(new HttpError(400, "Cannot change your own status"));
+      return;
     }
-  },
-);
 
+    const target = await UserModel.findById(userId);
+    if (!target) {
+      next(new HttpError(404, "User not found"));
+      return;
+    }
+
+    target.status = body.status;
+    await target.save();
+
+    res.json({ user: toPublicUser(target) });
+  } catch (err) {
+    next(err);
+  }
+});

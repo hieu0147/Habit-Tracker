@@ -36,8 +36,6 @@ userSchema.set("toJSON", {
   },
 });
 
-userSchema.index({ email: 1 }, { unique: true });
-
 export type UserDocument = mongoose.InferSchemaType<typeof userSchema> & {
   _id: mongoose.Types.ObjectId;
 };
